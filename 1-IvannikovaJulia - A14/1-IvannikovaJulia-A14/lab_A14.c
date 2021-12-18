@@ -1,14 +1,16 @@
+#define _CRTDBG_MAP_ALLOC 
+#include <stdlib.h>
+#include <crtdbg.h>
 #include "Header.h"
+
+
 
 static void __SkiplistNodeFree(Node* node) {
 	if (node != NULL) {
 		if (node->next != NULL) {
 			free(node->next);
-			assert(node->next == NULL);
 		}
-
 		free(node);
-		assert(node == NULL);
 	}
 }
 
@@ -20,7 +22,6 @@ Skiplist* SkiplistInit() {
 	Node* header = (Node*)malloc(sizeof(Node));
 	if (header == NULL) {
 		free(list);
-		assert(list == NULL);
 
 		return NULL;
 	}
@@ -32,8 +33,6 @@ Skiplist* SkiplistInit() {
 	if (header->next == NULL) {
 		free(header);
 		free(list);
-		assert(header == NULL);
-		assert(list == NULL);
 
 		return NULL;
 	}
@@ -150,19 +149,11 @@ void SkiplistFree(Skiplist* list) {
 		free(current->next);
 		free(current);
 
-		assert(current->next == NULL);
-		assert(current == NULL);
-
 		current = forward;
 	}
-
 	free(current->next);
 	free(current);
 	free(list);
-
-	assert(current->next == NULL);
-	assert(current == NULL);
-	assert(list == NULL);
 }
 
 
@@ -178,4 +169,20 @@ void SkiplistPrint(Skiplist* list) {
 		printf("%d[%d]->", node->next[1]->key, node->next[1]->value);
 		node = node->next[1];
 	}
+}
+
+Skiplist* test_skip_list_creation() {
+	Skiplist* list;
+	list = (Skiplist*)malloc(sizeof(Skiplist));
+	Node* header = (Node*)malloc(sizeof(Node));
+	list->header = header;
+	header->key = INT_MAX;
+	header->value = INT_MAX;
+	header->next = (Node**)malloc(sizeof(Node*) * MAX_LEVEL);
+
+	for (int i = 0; i < MAX_LEVEL; i++)
+		header->next[i] = header;
+
+	list->level = 1;
+	return list;
 }

@@ -39,6 +39,8 @@ TEST(InitCase, SkiplistInitialisation) {
 	ASSERT_TRUE(list->header->next[0] == list->header);
 	EXPECT_TRUE(list->level == 1);
 	EXPECT_TRUE(list->header->key == INT_MAX);
+
+	SkiplistFree(list);
 }
 
 
@@ -60,6 +62,10 @@ TEST(SearchCase, SkiplistSearchInEmptyList) {
 
 	Node* search_result = SkiplistSearch(list, 1);
 	EXPECT_TRUE(search_result == NULL);
+
+	free(list->header->next);
+	free(list->header);
+	free(list);
 }
 
 
@@ -93,6 +99,8 @@ TEST(SearchCase, SkiplistSearchInListWithOneElementInIt) {
 	Node* search_result = SkiplistSearch(list, 1);
 	ASSERT_TRUE(search_result != NULL);
 	EXPECT_TRUE(search_result->value == 1);
+
+	SkiplistFree(list);
 }
 
 
@@ -125,13 +133,16 @@ TEST(SearchCase, SkiplistSearchInListWithOneElementWithoutNeedValue) {
 
 	Node* search_result = SkiplistSearch(list, 2);
 	ASSERT_TRUE(search_result == NULL);
+
+	SkiplistFree(list);
 }
 
 TEST(DeleteCase, SkiplistDeleteElementFromEmptyList) {
 	Skiplist* list = test_skip_list_creation();
 	int res = SkiplistDelete(list, 1);
 	ASSERT_TRUE(res == 1);
-	ASSERT_TRUE(SkiplistSearch(list, 1) == NULL);
+
+	SkiplistFree(list);
 }
 
 
@@ -164,7 +175,8 @@ TEST(DeleteKeyCase, SkiplistDeleteElementFromNotEmptyListWithNeedValue) {
 
 	int res = SkiplistDelete(list, 1);
 	ASSERT_TRUE(res == 0);
-	ASSERT_TRUE(SkiplistSearch(list, 1) == NULL);
+
+	SkiplistFree(list);
 }
 
 
@@ -198,6 +210,8 @@ TEST(DeleteKeyCase, SkiplistDeleteElementFromNotEmptyWithNotNeedValue) {
 	int res = SkiplistDelete(list, 2);
 	ASSERT_TRUE(res == 1);
 	ASSERT_FALSE(SkiplistSearch(list, 2) == NULL);
+
+	SkiplistFree(list);
 }
 
 TEST(DeleteListCase, DeleteNULLSkipList) {
@@ -207,7 +221,6 @@ TEST(DeleteListCase, DeleteNULLSkipList) {
 TEST(DeleteListCase, DeleteEmptySkipList) {
 	Skiplist* list = test_skip_list_creation();
 	ASSERT_NO_FATAL_FAILURE(SkiplistFree(list));
-	ASSERT_TRUE(list == NULL);
 }
 
 TEST(DeleteListCase, DeleteNotEmptySkipList) {
@@ -237,5 +250,4 @@ TEST(DeleteListCase, DeleteNotEmptySkipList) {
 	update[2]->next[2] = element;
 
 	ASSERT_NO_FATAL_FAILURE(SkiplistFree(list));
-	ASSERT_TRUE(list == NULL);
 }
